@@ -1,5 +1,29 @@
 {% extends "network/layout.html" %}
-
+{% load static %}
 {% block body %}
-    TODO
+    {% if user.is_authenticated %}
+    <div>
+        <h6>New Post</h6>
+        <form action="{% url 'newPost' %} " method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="text" placeholder="What you thinking" name="newPost">
+            <input type="file" name="image">
+            <input type="submit" value="Post">
+        </form>
+    </div>
+    {% endif %}
+    {% for post in posts %}
+    <div>
+        <strong>{{post.user}} </strong>
+        <hr>
+        {% if post.image %}
+        <img src="{{post.image.url}} " style="width: 200px;">
+        {% endif %}
+        <p>{{post.post}} </p>
+        <p>{{post.date}} </p>
+        <p>Likes: {{post.like}} </p>
+    </div>
+    {% empty %}
+    <p>there are no posts yet</p>
+    {% endfor %}
 {% endblock %}
