@@ -10,7 +10,7 @@ from .models import User, Post
 
 def index(request):
     return render(request, "network/index.html", {
-        'posts': Post.objects.all()
+        'posts': Post.objects.all().order_by('-id')
     })
 
 
@@ -76,3 +76,8 @@ def newPost(request):
         newPost = Post(post=post, image=img, user=user, date= str(now.strftime(f"%d/%m/%Y %H:%M:%S")))
         newPost.save()
         return HttpResponseRedirect(reverse('index'))
+
+def profile(request, user):
+    user1 = User.objects.filter(username=user).get()
+    following = user1.following.all()
+    return HttpResponse(f"{following}")

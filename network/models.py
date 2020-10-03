@@ -16,3 +16,8 @@ class Comment(models.Model):
     comment = models.CharField(max_length=500, blank=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='commentUser')
     post = models.ManyToManyField(Post, blank=True, related_name='postComments')
+
+class UserFollow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    userFollowers = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    
