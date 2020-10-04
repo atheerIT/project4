@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime
 
-from .models import User, Post
+from .models import User, Post, UserFollow
 
 
 def index(request):
@@ -77,7 +77,35 @@ def newPost(request):
         newPost.save()
         return HttpResponseRedirect(reverse('index'))
 
-def profile(request, user):
-    user1 = User.objects.filter(username=user).get()
-    following = user1.following.all()
-    return HttpResponse(f"{following}")
+def profile(request, profileUser):
+    user1 = User.objects.get(username=profileUser)
+    follower = user1.following.all().count()
+    following = user1.followers.all().count()
+    if request.user.is_authenticated:
+        isFollowed= request.user.followers.filter(user=user1).exists()
+    else:
+        isFollowed=False
+    posts = user1.geek.all().order_by('-id')
+    if request.user.id == user1.id:
+        owner = True
+    else:
+        owner = False
+    return render(request, 'network/profile.html', {
+        'user1': user1,
+        'following': following,
+        'followers': follower,
+        'posts': posts,
+        'owner': owner,
+        'isFollowed': isFollowed,
+    })
+
+def editFollow(request, profileUser):
+    follower = User.objects.get(pk=request.user.id)
+    user = User.objects.get(username=profileUser)
+    if follower.followers.filter(user=user).exists():
+        follower.followers.filter(user=user).delete()
+    else: 
+        follow = UserFollow(user=user, userFollowers=follower)
+        follow.save()
+        print(follow)
+    return HttpResponseRedirect(reverse('profile', args=(profileUser,)))

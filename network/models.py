@@ -20,4 +20,6 @@ class Comment(models.Model):
 class UserFollow(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
     userFollowers = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
+    def __str__(self):
+        return f"user: {self.user} userFollowers: {self.userFollowers}"
     
