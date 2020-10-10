@@ -10,7 +10,7 @@ from .models import User, Post, UserFollow
 
 def index(request):
     return render(request, "network/index.html", {
-        'posts': Post.objects.all().order_by('-id')
+        'posts': Post.objects.all().order_by('-id'),
     })
 
 
@@ -73,16 +73,18 @@ def newPost(request):
         if not img:
             img = None
         user = request.user
-        newPost = Post(post=post, image=img, user=user, date= str(now.strftime(f"%d/%m/%Y %H:%M:%S")))
+        newPost = Post(post=post, image=img, user=user, date= now)
         newPost.save()
         return HttpResponseRedirect(reverse('index'))
 
 def profile(request, profileUser):
     user1 = User.objects.get(username=profileUser)
-    follower = user1.following.all().count()
-    following = user1.followers.all().count()
+    following= user1.following.all().count()
+    followers = user1.followres.all().count()
+    print(user1.following.all())
+    print(user1.followres.all())
     if request.user.is_authenticated:
-        isFollowed= request.user.followers.filter(user=user1).exists()
+        isFollowed= request.user.following.filter(following=user1.id).exists()
     else:
         isFollowed=False
     posts = user1.geek.all().order_by('-id')
@@ -93,7 +95,7 @@ def profile(request, profileUser):
     return render(request, 'network/profile.html', {
         'user1': user1,
         'following': following,
-        'followers': follower,
+        'followers': followers,
         'posts': posts,
         'owner': owner,
         'isFollowed': isFollowed,
@@ -101,11 +103,18 @@ def profile(request, profileUser):
 
 def editFollow(request, profileUser):
     follower = User.objects.get(pk=request.user.id)
-    user = User.objects.get(username=profileUser)
-    if follower.followers.filter(user=user).exists():
-        follower.followers.filter(user=user).delete()
-    else: 
-        follow = UserFollow(user=user, userFollowers=follower)
-        follow.save()
-        print(follow)
+    profileUser = User.objects.get(username=profileUser)
+    print(profileUser)
+    if follower.following.filter(following=profileUser).exists():
+        follower.following.filter(following=profileUser).delete()
+    else:
+        UserFollow.objects.create(follower=follower, following=profileUser) 
     return HttpResponseRedirect(reverse('profile', args=(profileUser,)))
+
+def following(request):
+    follows = request.user.follows.all()
+    users = User.objects.filter(pk__in=follows)
+    posts = Post.objects.filter(user__in=users).order_by('-date')
+    return render(request, 'network/following.html',{
+        'posts':posts
+    })

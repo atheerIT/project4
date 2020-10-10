@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 class User(AbstractUser):
     pass
 
@@ -9,17 +8,15 @@ class Post(models.Model):
     post = models.CharField(max_length=500, blank=False)
     image = models.ImageField(upload_to="postImage", null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='geek')
-    date = models.CharField(max_length=64, blank=False, default="2020-09-29: now")
-    like = models.IntegerField(default=0, blank=False)
-
-class Comment(models.Model):
-    comment = models.CharField(max_length=500, blank=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='commentUser')
-    post = models.ManyToManyField(Post, blank=True, related_name='postComments')
+    date = models.DateTimeField(blank=False)
+    postLike = models.IntegerField(default=0)
 
 class UserFollow(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
-    userFollowers = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers')
-    def __str__(self):
-        return f"user: {self.user} userFollowers: {self.userFollowers}"
+    follower = models.ForeignKey(User, related_name='following', on_delete=models.CASCADE, default=None)
+    following = models.ForeignKey(User, related_name='followres', on_delete=models.CASCADE, default=None)
+
+
+class UserLikes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='liker')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='likedPosts')
     
