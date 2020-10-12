@@ -1,16 +1,21 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime
+from django.core.paginator import Paginator
 
 from .models import User, Post, UserFollow
 
 
 def index(request):
+    posts = Post.objects.all().order_by('-id')
+    paginator = Paginator(posts, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, "network/index.html", {
-        'posts': Post.objects.all().order_by('-id'),
+        'page_obj': page_obj,
     })
 
 
@@ -81,8 +86,6 @@ def profile(request, profileUser):
     user1 = User.objects.get(username=profileUser)
     following= user1.following.all().count()
     followers = user1.followres.all().count()
-    print(user1.following.all())
-    print(user1.followres.all())
     if request.user.is_authenticated:
         isFollowed= request.user.following.filter(following=user1.id).exists()
     else:
@@ -112,9 +115,18 @@ def editFollow(request, profileUser):
     return HttpResponseRedirect(reverse('profile', args=(profileUser,)))
 
 def following(request):
-    follows = request.user.follows.all()
-    users = User.objects.filter(pk__in=follows)
+    follows = request.user.following.all()
+    users = User.objects.filter(followres__in=follows)
     posts = Post.objects.filter(user__in=users).order_by('-date')
     return render(request, 'network/following.html',{
         'posts':posts
     })
+
+def editPost(request):
+    post = Post.objects.get(pk=request.GET['id'])
+    post.post = request.GET['newPost']
+    post.save()
+    return JsonResponse({
+        'response': 'true',
+        'post':post.post
+        })

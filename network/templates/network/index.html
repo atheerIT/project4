@@ -1,6 +1,7 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
+<script src="{% static 'posts/editPost.js' %}"></script>
     {% if user.is_authenticated %}
     <div>
         <h6>New Post</h6>
@@ -12,20 +13,44 @@
         </form>
     </div>
     {% endif %}
-    {% for post in posts %}
+    {% for post in page_obj %}
     <div>
-        <a href="{% url 'profile' post.user%} ">
-            <strong>{{post.user}} </strong>
+        <a href="{% url 'profile' post.user %}">
+            <strong>{{post.user}}</strong>
         </a>
         <hr>
         {% if post.image %}
         <img src="{{post.image.url}} " style="width: 200px;">
         {% endif %}
-        <p>{{post.post}} </p>
+        <div class="postDiv" id="{{post.id}}">
+            <P>{{post.post}}</P>
+        </div>
         <p>{{post.date}} </p>
         <p>Likes: {{post.postLike}} </p>
+        {% if user.is_authenticated %}
+        {% if post.user == user %}
+        <button class="edit">Edit</button>
+        {% endif %}
+        {% endif %}
     </div>
     {% empty %}
     <p>there are no posts yet</p>
     {% endfor %}
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+    
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
 {% endblock %}

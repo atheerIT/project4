@@ -1,0 +1,20 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+    {% for post in posts %}
+    <div>
+        <a href="{% url 'profile' post.user%} ">
+            <strong>{{post.user}} </strong>
+        </a>
+        <hr>
+        {% if post.image %}
+        <img src="{{post.image.url}} " style="width: 200px;">
+        {% endif %}
+        <p>{{post.post}} </p>
+        <p>{{post.date}} </p>
+        <p>Likes: {{post.postLike}} </p>
+    </div>
+    {% empty %}
+    <p>there are no posts yet</p>
+    {% endfor %}
+{% endblock %}

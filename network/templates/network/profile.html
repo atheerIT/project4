@@ -1,0 +1,30 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+<h1>{{user1.username}}</h1>
+<p>follows: {{following}}</p>
+<p>followers: {{followers}} </p>
+{% if user.is_authenticated %}
+    {% if not owner %}
+        {% if isFollowed %}
+        <a href="{% url 'editFollow' user1 %}" type="button">Unfollow</a>
+        {% else %}
+        <a href="{% url 'editFollow' user1 %}" type="button">follow</a>
+        {% endif %}
+    {% endif %}
+{% endif %}
+{% for post in posts %}
+<div>
+    <strong>{{post.user}} </strong>
+    <hr>
+    {% if post.image %}
+    <img src="{{post.image.url}} " style="width: 200px;">
+    {% endif %}
+    <p>{{post.post}} </p>
+    <p>{{post.date}} </p>
+    <p>Likes: {{post.postLike}} </p>
+</div>
+{% empty %}
+<p>there are no posts yet</p>
+{% endfor %}
+{% endblock %}
