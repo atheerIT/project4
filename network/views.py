@@ -6,7 +6,7 @@ from django.urls import reverse
 from datetime import datetime
 from django.core.paginator import Paginator
 
-from .models import User, Post, UserFollow
+from .models import User, Post, UserFollow, UserLikes
 
 
 def index(request):
@@ -130,3 +130,6 @@ def editPost(request):
         'response': 'true',
         'post':post.post
         })
+
+def like(request):
+    pass

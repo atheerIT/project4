@@ -1,34 +1,30 @@
-
 document.addEventListener('click', event=>{
     const element = event.target
     if (element.className === 'edit'){
-        const item = element.parentElement.children[2]
-        const newText = document.createElement('textarea')
-        newText.id='postText'
-        const save = document.createElement('button')
-        save.className= 'save'
-        save.textContent = 'Save'
-        newText.value = item.children[0].textContent
-        item.children[0].style.display = 'none'
+        const p = element.parentElement.children[0]
+        const textInput = element.parentElement.children[1]
+        const save = element.parentElement.children[3]
+        textInput.value = element.parentElement.children[0].textContent
+        p.style.display = 'none'
+        textInput.style.display = 'block'
+        save.style.display = 'block'
         element.style.display = 'none'
-        item.append(newText)
-        item.append(save)
-
     }
-    if (element.className==='save') {
-        const item = element.parentElement
-        const textArea = document.querySelector('#postText')
-        const save = document.querySelector('.save')
-        const text = document.createElement('p')
-        fetch(`/editPost?newPost=${textArea.value}&id=${item.id}`)
+    if(element.className === 'save'){
+        const p = element.parentElement.children[0]
+        const edit = element.parentElement.children[2]
+        const textInput = element.parentElement.children[1]
+        const save = element.parentElement.children[3]
+        fetch(`/editPost?newPost=${textInput.value}&id=${element.parentElement.id}`)
         .then(res=>res.json())
         .then(data=>{
-            text.textContent=data.post
+            p.textContent = data.post
         })
-        .catch(err=>console.log(err))
-        textArea.style.display = 'none'
+        .catch(err=>console.log('Error:', err))
+        textInput.style.display = 'none'
         save.style.display = 'none'
-        item.append(text)
+        p.style.display = 'block'
+        edit.style.display = 'block'
     }
 })     
 

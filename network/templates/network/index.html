@@ -23,15 +23,17 @@
         <img src="{{post.image.url}} " style="width: 200px;">
         {% endif %}
         <div class="postDiv" id="{{post.id}}">
-            <P>{{post.post}}</P>
+            <P class="post">{{post.post}}</P>
+            <input type="text" class="textInput" style="display: none;">
+            {% if user.is_authenticated %}
+            {% if post.user == user %}
+            <button class="edit">Edit</button>
+            <button class="save" style="display: none;">Save</button>
+            {% endif %}
+            {% endif %}
         </div>
         <p>{{post.date}} </p>
-        <p>Likes: {{post.postLike}} </p>
-        {% if user.is_authenticated %}
-        {% if post.user == user %}
-        <button class="edit">Edit</button>
-        {% endif %}
-        {% endif %}
+        <p> <a href="#">Likes:</a> {{post.postLike}} </p>
     </div>
     {% empty %}
     <p>there are no posts yet</p>
