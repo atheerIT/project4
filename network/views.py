@@ -132,4 +132,31 @@ def editPost(request):
         })
 
 def like(request):
-    pass
+    post = Post.objects.get(pk=request.GET['id'])
+    if post.likedPosts.filter(user=request.user).exists():
+        post.likedPosts.filter(user=request.user).delete()
+        post.postLike = post.postLike -1
+        if post.postLike < 0:
+            post.postLike = 0
+        post.save()
+        return JsonResponse({
+            'likes':post.postLike
+        })
+    else:
+        UserLikes.objects.create(user=request.user, post=post)
+        post.postLike= post.postLike +1
+        post.save()
+        return JsonResponse({
+            'likes':post.postLike
+        })
+
+def isLiked(request):
+    post = Post.objects.get(pk=request.GET['id'])
+    if post.likedPosts.filter(user=request.user).exists():
+        return JsonResponse({
+            'isLiked': True,
+        })
+    else:
+        return JsonResponse({
+            'isLiked': False,
+        })
