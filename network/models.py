@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class User(AbstractUser):
-    pass
+    avatar = models.ImageField(upload_to="userAvatar", null=True)
 
 class Post(models.Model):
     post = models.CharField(max_length=500, blank=False)

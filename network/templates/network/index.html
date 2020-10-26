@@ -14,26 +14,42 @@
     </div>
     {% endif %}
     {% for post in page_obj %}
-    <div>
-        <a href="{% url 'profile' post.user %}">
-            <strong>{{post.user}}</strong>
-        </a>
-        <hr>
-        {% if post.image %}
-        <img src="{{post.image.url}} " style="width: 200px;">
-        {% endif %}
-        <div class="postDiv" id="{{post.id}}">
-            <P class="post">{{post.post}}</P>
-            <input type="text" class="textInput" style="display: none;">
-            {% if user.is_authenticated %}
-            {% if post.user == user %}
-            <button class="edit">Edit</button>
-            <button class="save" style="display: none;">Save</button>
+    <div class="card w-100" style="margin: 10px;">
+        <div class="card-header">
+            {% if post.user.avatar %}
+            <img src="{{post.user.avatar.url}}" alt="avatar" width="50px" style="vertical-align: middle; border-radius: 10px; border: 2px solid white;">
+            {% else %}
+            <img src="{% static 'icon/default-avatar.jpg' %}" alt="avatar" width="30px" style="vertical-align: middle; border-radius: 15px; border: 2px solid white;">
             {% endif %}
-            {% endif %}
+            <a href="{% url 'profile' post.user %}">
+                <strong>{{post.user}}</strong>
+            </a>
+            </img> 
         </div>
-        <p>{{post.date}} </p>
-        <p> <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px"/> <span>{{post.postLike}}</span> </p>
+        <div class="card-body">
+            {% if post.image %}
+            <img src="{{post.image.url}} " style="width: 200px;">
+            {% endif %}
+            <div class="postDiv" id="{{post.id}}">
+                <P class="post">{{post.post}}</P>
+                <input type="text" class="textInput" style="display: none;">
+                {% if user.is_authenticated %}
+                {% if post.user == user %}
+                <button class="edit">Edit</button>
+                <button class="save" style="display: none;">Save</button>
+                {% endif %}
+                {% endif %}
+        </div>
+        <p> 
+            {% if user.is_authenticated %}
+            <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px"/>
+            {% else %}
+            <span>Likes: </span> 
+            {% endif %}
+            <span>{{post.postLike}}</span>
+            <small class="text-muted" style="float: right;">{{post.date}} </small> 
+        </p>
+        </div>
     </div>
     {% empty %}
     <p>there are no posts yet</p>

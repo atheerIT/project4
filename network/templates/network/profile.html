@@ -1,28 +1,55 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-<h1>{{user1.username}}</h1>
-<p>follows: {{following}}</p>
-<p>followers: {{followers}} </p>
-{% if user.is_authenticated %}
-    {% if not owner %}
-        {% if isFollowed %}
-        <a href="{% url 'editFollow' user1 %}" type="button">Unfollow</a>
+<div class="row">
+    <div class="col-2" style="padding-top: 20px;">
+        {% if user1.avatar %}
+        <img class="userAva" src="{{user1.avatar.url}}" alt="avatar" width="150px">
         {% else %}
-        <a href="{% url 'editFollow' user1 %}" type="button">follow</a>
+        <img class="userAva" src="{% static 'icon/default-avatar.jpg' %}" alt="avatar" width="150px">
         {% endif %}
-    {% endif %}
-{% endif %}
+    </div>
+    <div class="col">
+        <h1>{{user1.username}}</h1>
+        <p>follows: {{following}}</p>
+        <p>followers: {{followers}} </p>
+        {% if user.is_authenticated %}
+            {% if not owner %}
+                {% if isFollowed %}
+                <a href="{% url 'editFollow' user1 %}" type="button">Unfollow</a>
+                {% else %}
+                <a href="{% url 'editFollow' user1 %}" type="button">follow</a>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
 {% for post in posts %}
-<div>
-    <strong>{{post.user}} </strong>
-    <hr>
-    {% if post.image %}
-    <img src="{{post.image.url}} " style="width: 200px;">
-    {% endif %}
-    <p>{{post.post}} </p>
-    <p>{{post.date}} </p>
-    <p>Likes: {{post.postLike}} </p>
+<div class="card w-100" style="margin: 10px;">
+    <div class="card-header">
+        {% if post.user.avatar %}
+        <img src="{{post.user.avatar.url}}" alt="avatar" width="50px" style="vertical-align: middle; border-radius: 10px; border: 2px solid white;">
+        {% else %}
+        <img src="{% static 'icon/default-avatar.jpg' %}" alt="avatar" width="30px" style="vertical-align: middle; border-radius: 15px; border: 2px solid white;">
+        {% endif %}
+        <strong>{{post.user}}</strong>
+    </img> 
+    </div>
+    <div class="card-body">
+        {% if post.image %}
+        <img src="{{post.image.url}} " style="width: 200px;">
+        {% endif %}
+        <p class="card-text">{{post.post}} </p>
+        <p> 
+            {% if user.is_authenticated %}
+            <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px"/>
+            {% else %}
+            <span>Likes: </span> 
+            {% endif %}
+            <span>{{post.postLike}}</span>
+            <small class="text-muted" style="float: right;">{{post.date}} </small> 
+        </p>
+    </div>
 </div>
 {% empty %}
 <p>there are no posts yet</p>

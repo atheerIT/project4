@@ -48,6 +48,7 @@ def register(request):
     if request.method == "POST":
         username = request.POST["username"]
         email = request.POST["email"]
+        avatar = request.FILES.get("userPhoto", None)
 
         # Ensure password matches confirmation
         password = request.POST["password"]
@@ -59,7 +60,7 @@ def register(request):
 
         # Attempt to create new user
         try:
-            user = User.objects.create_user(username, email, password)
+            user = User.objects.create_user(username, email, password, avatar= avatar)
             user.save()
         except IntegrityError:
             return render(request, "network/register.html", {
@@ -118,8 +119,11 @@ def following(request):
     follows = request.user.following.all()
     users = User.objects.filter(followres__in=follows)
     posts = Post.objects.filter(user__in=users).order_by('-date')
-    return render(request, 'network/following.html',{
-        'posts':posts
+    paginator = Paginator(posts, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "network/index.html", {
+        'page_obj': page_obj,
     })
 
 def editPost(request):

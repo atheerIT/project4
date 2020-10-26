@@ -1,20 +1,53 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
-    {% for post in posts %}
-    <div>
-        <a href="{% url 'profile' post.user%} ">
-            <strong>{{post.user}} </strong>
-        </a>
-        <hr>
-        {% if post.image %}
-        <img src="{{post.image.url}} " style="width: 200px;">
+{% for post in page_obj %}
+<div>
+    <a href="{% url 'profile' post.user %}">
+        <strong>{{post.user}}</strong>
+    </a>
+    <hr>
+    {% if post.image %}
+    <img src="{{post.image.url}} " style="width: 200px;">
+    {% endif %}
+    <div class="postDiv" id="{{post.id}}">
+        <P class="post">{{post.post}}</P>
+        <input type="text" class="textInput" style="display: none;">
+        {% if user.is_authenticated %}
+        {% if post.user == user %}
+        <button class="edit">Edit</button>
+        <button class="save" style="display: none;">Save</button>
         {% endif %}
-        <p>{{post.post}} </p>
-        <p>{{post.date}} </p>
-        <p>Likes: {{post.postLike}} </p>
+        {% endif %}
     </div>
-    {% empty %}
-    <p>there are no posts yet</p>
-    {% endfor %}
+    <p>{{post.date}} </p>
+    <p> 
+        {% if user.is_authenticated %}
+        <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px"/>
+        {% else %}
+        <span>Likes: </span> 
+        {% endif %}
+        <span>{{post.postLike}}</span> 
+    </p>
+</div>
+{% empty %}
+<p>there are no posts yet</p>
+{% endfor %}
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 {% endblock %}
