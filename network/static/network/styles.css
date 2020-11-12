@@ -4,3 +4,12 @@ body{
 .userAva {
     margin-top: 50px;
 }
+#postDiv{
+    width: 100%; 
+    text-align: center; 
+    background-color: rgb(3, 56, 204);
+}
+
+#post{
+    width: 200px;
+}

@@ -1,6 +1,7 @@
 {% extends "network/layout.html" %}
 {% load static %}
 {% block body %}
+<script src="{% static 'posts/editPost.js' %}"></script>
 {% for post in page_obj %}
 <div>
     <a href="{% url 'profile' post.user %}">
@@ -21,13 +22,13 @@
         {% endif %}
     </div>
     <p>{{post.date}} </p>
-    <p> 
+    <p>
         {% if user.is_authenticated %}
-        <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px"/>
+        <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px" />
         {% else %}
-        <span>Likes: </span> 
+        <span>Likes: </span>
         {% endif %}
-        <span>{{post.postLike}}</span> 
+        <span>{{post.postLike}}</span>
     </p>
 </div>
 {% empty %}
@@ -36,8 +37,8 @@
 <div class="pagination">
     <span class="step-links">
         {% if page_obj.has_previous %}
-            <a href="?page=1">&laquo; first</a>
-            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
         {% endif %}
 
         <span class="current">
@@ -45,8 +46,8 @@
         </span>
 
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">next</a>
-            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
         {% endif %}
     </span>
 </div>

@@ -1,74 +1,113 @@
 {% extends "network/layout.html" %}
 {% load static %}
+{% load filter %}
 {% block body %}
 <script src="{% static 'posts/editPost.js' %}"></script>
-    {% if user.is_authenticated %}
-    <div>
-        <h6>New Post</h6>
-        <form action="{% url 'newPost' %} " method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <input type="text" placeholder="What you thinking" name="newPost">
-            <input type="file" name="image">
-            <input type="submit" value="Post">
-        </form>
+{% if user.is_authenticated %}
+<div class="container">
+    <label>New Post</label>
+    <form action="{% url 'newPost' %} " method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+            <input class="form-control" type="text" placeholder="What are you thinking?" name="newPost" id="postText">
+            <div class="input-group-append">
+                <input type="file" name="image" style="display: none;" id="fileElement">
+                <button id="fileSelect" class="btn btn-outline-info">
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-paperclip" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M4.5 3a2.5 2.5 0 0 1 5 0v9a1.5 1.5 0 0 1-3 0V5a.5.5 0 0 1 1 0v7a.5.5 0 0 0 1 0V3a1.5 1.5 0 1 0-3 0v9a2.5 2.5 0 0 0 5 0V5a.5.5 0 0 1 1 0v7a3.5 3.5 0 1 1-7 0V3z" />
+                    </svg>
+                </button>
+
+            </div>
+        </div>
+        <div class="postDiv">
+            <input type="submit" value="Post" class="btn btn-primary btn-sm" id="post">
+        </div>
+    </form>
+</div>
+{% endif %}
+{% for post in page_obj %}
+<div class="card w-100" style="margin: 10px;">
+    <div class="card-header">
+        {% if post.user.avatar %}
+        <img src="{{post.user.avatar.url}}" alt="avatar" width="50px"
+            style="vertical-align: middle; border-radius: 10px; border: 2px solid white;">
+        {% else %}
+        <img src="{% static 'icon/default-avatar.jpg' %}" alt="avatar" width="30px"
+            style="vertical-align: middle; border-radius: 15px; border: 2px solid white;">
+        {% endif %}
+        <a href="{% url 'profile' post.user %}">
+            <strong>{{post.user}}</strong>
+        </a>
+        </img>
     </div>
-    {% endif %}
-    {% for post in page_obj %}
-    <div class="card w-100" style="margin: 10px;">
-        <div class="card-header">
-            {% if post.user.avatar %}
-            <img src="{{post.user.avatar.url}}" alt="avatar" width="50px" style="vertical-align: middle; border-radius: 10px; border: 2px solid white;">
-            {% else %}
-            <img src="{% static 'icon/default-avatar.jpg' %}" alt="avatar" width="30px" style="vertical-align: middle; border-radius: 15px; border: 2px solid white;">
-            {% endif %}
-            <a href="{% url 'profile' post.user %}">
-                <strong>{{post.user}}</strong>
-            </a>
-            </img> 
-        </div>
-        <div class="card-body">
-            {% if post.image %}
-            <img src="{{post.image.url}} " style="width: 200px;">
-            {% endif %}
-            <div class="postDiv" id="{{post.id}}">
-                <P class="post">{{post.post}}</P>
-                <input type="text" class="textInput" style="display: none;">
-                {% if user.is_authenticated %}
-                {% if post.user == user %}
-                <button class="edit">Edit</button>
-                <button class="save" style="display: none;">Save</button>
-                {% endif %}
-                {% endif %}
-        </div>
-        <p> 
+    <div class="card-body">
+        {% if post.image %}
+        <img src="{{post.image.url}} " style="width: 200px;">
+        {% endif %}
+        <div class="postDiv" id="{{post.id}}">
+            <P class="post">{{post.post}}</P>
+            <input type="text" class="textInput" style="display: none;">
             {% if user.is_authenticated %}
-            <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px"/>
+            {% if post.user == user %}
+            <button class="edit">Edit</button>
+            <button class="save" style="display: none;">Save</button>
+            {% endif %}
+            {% endif %}
+        </div>
+        <p>
+            {% if user.is_authenticated %}
+            <img class="like" data-like="{{post.id}}" src="{% static 'icon/like.jpg' %} " width="20px" height="20px" />
             {% else %}
-            <span>Likes: </span> 
+            <span>Likes: </span>
             {% endif %}
             <span>{{post.postLike}}</span>
-            <small class="text-muted" style="float: right;">{{post.date}} </small> 
+            <small class="text-muted" style="float: right;">{{post.date}} </small>
         </p>
-        </div>
     </div>
-    {% empty %}
-    <p>there are no posts yet</p>
-    {% endfor %}
-    <div class="pagination">
-        <span class="step-links">
-            {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-            {% endif %}
-    
-            <span class="current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-            </span>
-    
-            {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-            {% endif %}
+</div>
+{% empty %}
+<p>there are no posts yet</p>
+{% endfor %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="?page=1" aria-disabled="true">Previous</a></li>
+        {% endif %}
+        {% for value in 1|range1:page_obj.paginator.num_pages %}
+        <li class="page-item {% if value == page_obj.number %}active{% endif %}"><a class="page-link"
+                href="?page={{ value }}">{{value}}</a></li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+        <li class="page-item disabled"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}"
+                aria-disabled="true">Next</a></li>
+        {% endif %}
+
+    </ul>
+</nav>
+<!-- 
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+        <a href="?page=1">&laquo; first</a>
+        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
         </span>
-    </div>
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">next</a>
+        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+-->
+</div>
 {% endblock %}
